@@ -42,6 +42,15 @@ def mostrarAutos():
     for i in range(len(marcas)):
         print(i+1, ". ", marcas[i], modelos[i], años[i], " - Patente: ", patentes[i], " - $", precios[i], " por día - Estado: ", estados[i])
 
+# funcion para evitar que se carguen autos duplicados
+# def insertarUnico(lista, dato):
+#     for i in range(len(lista)):
+#         if lista[i] == dato:
+#             print("Error: la patente ya está registrada")
+#             return False
+#     lista.append(dato)
+#     print("Auto agregado correctamente")
+#     return True
 
 def registrarAuto():
     print("----- REGISTRAR AUTO -----")
@@ -50,22 +59,31 @@ def registrarAuto():
     modelo = input("Ingresá el modelo del vehículo: ")
     año = input("Ingresá el año del vehículo: ")
     patente = input("Ingresá la patente del vehículo: ")
-    precio = input("Ingresá el precio del vehículo: ")
+    precio = input("Ingresá el precio por día del vehículo: ")
 
     # para verificar que no exista la patente y se agregue un auto con una duplicada. pregunta si la variable "patente" existe en el array patentes, después habría que hacer que cuando ingrese una patente repetida, se la pída de vuelta, así no tiene que completar todos los datos de nuevo (SEMANA 5)
-    if patente in patentes:
-        print("Ya existe un auto con esa patente. Volvé a intentarlo")
-        return
-    
-    # agregamos los datos que ingresó ewl usuario a las listas paralelas
-    marcas.append(marca)
-    modelos.append(modelo)
-    años.append(año)
-    patentes.append(patente)
-    precios.append(precio)
-    estados.append("Disponible")
+    # if patente in patentes:
+    #     print("Ya existe un auto con esa patente. Volvé a intentarlo")
+    #     return
 
-    print("Auto registrado correctamente: ", marca, modelo, "(", patente , ")")
+    #para verificar si la pantente que se quiere registrar ya existe
+    repetido = False
+    for i in range(len(patentes)):
+        if patentes[i] == patente:
+            repetido = True
+    
+    if repetido == True:
+        print("Error: la patente ya está registrada")
+        print("No se pudo registrar el auto")
+    else:
+        # si no está repetida, agregamos los datos que ingresó ewl usuario a las listas paralelas
+        marcas.append(marca)
+        modelos.append(modelo)
+        años.append(año)
+        patentes.append(patente)
+        precios.append(precio)
+        estados.append("Disponible")
+        print("Auto registrado correctamente: ", marca, modelo, "(", patente , ")")
 
 # aca vamos a agregar todas las funcionalidades del usuario, por ahora ver autos y regitrar uno, depués "alquilar auto" por ejemplo. comienza cargando los autos precargados
 def menu():
