@@ -59,7 +59,7 @@ def registrarAuto():
     modelo = input("Ingresá el modelo del vehículo: ")
     año = input("Ingresá el año del vehículo: ")
     patente = input("Ingresá la patente del vehículo: ")
-    precio = input("Ingresá el precio por día del vehículo: ")
+    precio = int(input("Ingresá el precio por día del vehículo: "))
 
     # para verificar que no exista la patente y se agregue un auto con una duplicada. pregunta si la variable "patente" existe en el array patentes, después habría que hacer que cuando ingrese una patente repetida, se la pída de vuelta, así no tiene que completar todos los datos de nuevo (SEMANA 5)
     # if patente in patentes:
@@ -85,6 +85,44 @@ def registrarAuto():
         estados.append("Disponible")
         print("Auto registrado correctamente: ", marca, modelo, "(", patente , ")")
 
+
+def alquilarAuto():
+    # mostramos el auto a alquilar y despues dejamos que el usuario elija el que desee
+    mostrarAutos()
+    print("----- ALQUILAR AUTO -----")
+    autoSeleccionado = int(input(f"Seleccioná el auto a alquilar (1 - {len(patentes)}): "))
+    indice = autoSeleccionado - 1
+
+    if indice < 0 or indice >= len(patentes):
+        print("Número invalido")
+        return
+    
+    # verificamos que el auto que seleccionó el usuario no este alquildo
+    if estados[indice] == "Alquilado":
+        print("El auto ", marcas[indice], modelos[indice], "(", patentes[indice], ") ya está alquilado")
+        return
+    
+    print("Seleccionaste: ", marcas[indice], modelos[indice], "(", patentes[indice], ")")
+
+    diasSeleccionados = int(input("Seleccioná la cantidad de días que lo queres alquilar: "))
+
+    if diasSeleccionados < 1:
+        print("Debés alquilarlo al menos por un día")
+        return
+    
+    total = diasSeleccionados * precios[indice]
+
+    print("El total a pagar es de: $", total)
+    confirma = int(input(f"¿Deseás alquilar {marcas[indice]} {modelos[indice]} ({patentes[indice]}) por {diasSeleccionados} días y ${total}? (1 = SI, 2 = NO): "))
+
+    if confirma == 1:
+        estados[indice] = "Alquilado"
+        print("Alquiler confirmado de: ", marcas[indice], modelos[indice], "(", patentes[indice], ")")
+        print("Debés abonar: $", total)
+    else:
+        print("Alquiler cancelado. El auto sigue disponible")
+
+
 # aca vamos a agregar todas las funcionalidades del usuario, por ahora ver autos y regitrar uno, depués "alquilar auto" por ejemplo. comienza cargando los autos precargados
 def menu():
     cargarAutosExistentes()
@@ -92,14 +130,17 @@ def menu():
         print("--- MENÚ PRINCIPAL DRIVIO ---")
         print("1. Mostrar autos")
         print("2. Registrar nuevo auto")
-        print("3. Salir")
-        opcion = input("Elegí una opción: ")
+        print("3. Alquilar auto")
+        print("4. Salir")
+        opcion = int(input("Elegí una opción: "))
 
-        if opcion == "1":
+        if opcion == 1:
             mostrarAutos()
-        elif opcion == "2":
+        elif opcion == 2:
             registrarAuto()
-        elif opcion == "3":
+        elif opcion == 3:
+            alquilarAuto()
+        elif opcion == 4:
             print("GRACIAS POR USAR DRIVIO")
             break
         else:
