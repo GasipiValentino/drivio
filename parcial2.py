@@ -122,6 +122,40 @@ def alquilarAuto():
     else:
         print("Alquiler cancelado. El auto sigue disponible")
 
+# funcion para que el usuario pueda ordenar de mayor a menor o al reves los precios de los autos, y despues guarda los datos en los respectivos arrays
+def burbujeoOrden(ascendente=True):
+    n = len(precios)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            # comparo segun el tipo de ordenamiento
+            if (ascendente and precios[j] > precios[j + 1]) or (not ascendente and precios[j] < precios[j + 1]):
+                # intercambio los precios
+                precios[j], precios[j + 1] = precios[j + 1], precios[j]
+                # intercambio también las otras listas para mantener consistencia
+                marcas[j], marcas[j + 1] = marcas[j + 1], marcas[j]
+                modelos[j], modelos[j + 1] = modelos[j + 1], modelos[j]
+                patentes[j], patentes[j + 1] = patentes[j + 1], patentes[j]
+                años[j], años[j + 1] = años[j + 1], años[j]
+                estados[j], estados[j + 1] = estados[j + 1], estados[j]
+
+
+# Funcion para que el usuario elija como filtrar por precip, usa burbujeoOrden
+def filtrarPorPrecio():
+    print("----- FILTRAR AUTOS POR PRECIO -----")
+    print("1. De menor a mayor")
+    print("2. De mayor a menor")
+    opcion = int(input("Elegí una opción: "))
+
+    if opcion == 1:
+        burbujeoOrden(ascendente=True)
+        print("Autos ordenados de menor a mayor precio:")
+        mostrarAutos()
+    elif opcion == 2:
+        burbujeoOrden(ascendente=False)
+        print("Autos ordenados de mayor a menor precio:")
+        mostrarAutos()
+    else:
+        print("Opción inválida.")
 
 # aca vamos a agregar todas las funcionalidades del usuario, por ahora ver autos y regitrar uno, depués "alquilar auto" por ejemplo. comienza cargando los autos precargados
 def menu():
@@ -131,7 +165,8 @@ def menu():
         print("1. Mostrar autos")
         print("2. Registrar nuevo auto")
         print("3. Alquilar auto")
-        print("4. Salir")
+        print("4. Filtrar autos por precio")
+        print("5. Salir")
         opcion = int(input("Elegí una opción: "))
 
         if opcion == 1:
@@ -140,6 +175,8 @@ def menu():
             registrarAuto()
         elif opcion == 3:
             alquilarAuto()
+        elif opcion == 4:
+            filtrarPorPrecio()
         elif opcion == 4:
             print("GRACIAS POR USAR DRIVIO")
             break
