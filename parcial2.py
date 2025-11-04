@@ -56,10 +56,45 @@ def registrarAuto():
     print("----- REGISTRAR AUTO -----")
     # pongo todos los campos que necesitamos para crear un nuevo auto, después hay que validar los datos ingresados (SEMANA 5). No ponemos el estado ya que después lo creamos con "Disponible"
     marca = input("Ingresá la marca del vehículo: ")
+    while len(marca) < 1:
+        print("Ingrese una marca válida.")
+        marca = input("Ingresá la marca del vehículo: ")
+
     modelo = input("Ingresá el modelo del vehículo: ")
-    año = input("Ingresá el año del vehículo: ")
-    patente = input("Ingresá la patente del vehículo: ")
+    while len(modelo) < 1:
+        print("Ingrese un modelo válida.")
+        modelo = input("Ingresá el modelo del vehículo: ")
+
+    año = int(input("Ingresá el año del vehículo: "))
+    while año < 2010 or año > 2025:
+        print("Ingrese un año mayor a 2010 y menor a 2025.")
+        año = int(input("Ingresá el año del vehículo: "))
+
+    # la validacion de la patente la movemos para acá, para que si la patente ya existe, no tenga que volver a ingresar todos los datos   
+    patente_valida = False
+    while not patente_valida:
+        patente = input("Ingresá la patente del vehículo: ")
+
+        # verificamos que tenga el largo correcto
+        if len(patente) < 5 or len(patente) > 7 or patente.isalnum() == False:
+            print("La patente debe tener entre 5 y 7 caracteres y solo letras o números.")
+            continue
+
+        # verificar si la patente ya existe
+        repetida = False
+        for i in range(len(patentes)):
+            if patentes[i] == patente:
+                repetida = True
+
+        if repetida:
+            print("La patente ya está registrada.")
+        else:
+            patente_valida = True
+    
     precio = int(input("Ingresá el precio por día del vehículo: "))
+    while precio < 1000 or precio > 100000:
+        print("Ingrese un precio entre 1.000 y 100.000.")
+        precio = int(input("Ingresá el precio por día del vehículo: "))
 
     # para verificar que no exista la patente y se agregue un auto con una duplicada. pregunta si la variable "patente" existe en el array patentes, después habría que hacer que cuando ingrese una patente repetida, se la pída de vuelta, así no tiene que completar todos los datos de nuevo (SEMANA 5)
     # if patente in patentes:
@@ -67,15 +102,15 @@ def registrarAuto():
     #     return
 
     #para verificar si la pantente que se quiere registrar ya existe
-    repetido = False
-    for i in range(len(patentes)):
-        if patentes[i] == patente:
-            repetido = True
+    # repetido = False
+    # for i in range(len(patentes)):
+    #     if patentes[i] == patente:
+    #         repetido = True
     
-    if repetido == True:
-        print("Error: la patente ya está registrada")
-        print("No se pudo registrar el auto")
-    else:
+    # if repetido == True:
+    #     print("Error: la patente ya está registrada")
+    #     print("No se pudo registrar el auto")
+
         # si no está repetida, agregamos los datos que ingresó ewl usuario a las listas paralelas
         marcas.append(marca)
         modelos.append(modelo)
@@ -91,6 +126,10 @@ def alquilarAuto():
     mostrarAutos()
     print("----- ALQUILAR AUTO -----")
     autoSeleccionado = int(input(f"Seleccioná el auto a alquilar (1 - {len(patentes)}): "))
+    while autoSeleccionado < 1 or autoSeleccionado > len(patentes):
+        print(f"Ingresa un número dentro del rango. 1 - {len(patentes)}")
+        autoSeleccionado = int(input(f"Seleccioná nuevamente (1 - {len(patentes)}): "))
+
     indice = autoSeleccionado - 1
 
     if indice < 0 or indice >= len(patentes):
@@ -104,22 +143,33 @@ def alquilarAuto():
     
     print("Seleccionaste: ", marcas[indice], modelos[indice], "(", patentes[indice], ")")
 
-    diasSeleccionados = int(input("Seleccioná la cantidad de días que lo queres alquilar: "))
+    # diasSeleccionados = int(input("Seleccioná la cantidad de días que lo queres alquilar: "))
 
-    if diasSeleccionados < 1:
-        print("Debés alquilarlo al menos por un día")
-        return
+    # if diasSeleccionados < 1:
+    #     print("Debés alquilarlo al menos por un día")
+    #     return
+
+    diasSeleccionados = int(input("¿Por cuántos días querés alquilarlo?: "))
+    while diasSeleccionados < 1:
+        print("Debes alquilarlo al menos por un día.")
+        diasSeleccionados = int(input("¿Por cuántos días querés alquilarlo?: "))
+
     
     total = diasSeleccionados * precios[indice]
 
     print("El total a pagar es de: $", total)
     confirma = int(input(f"¿Deseás alquilar {marcas[indice]} {modelos[indice]} ({patentes[indice]}) por {diasSeleccionados} días y ${total}? (1 = SI, 2 = NO): "))
+    while confirma < 1 or confirma > 2:
+        print("Ingresá 1 para SI o 2 para NO.")
+        confirma = int(input(f"¿Deseás alquilar {marcas[indice]} {modelos[indice]} ({patentes[indice]}) por {diasSeleccionados} días y ${total}? (1 = SI, 2 = NO): "))
+
+
 
     if confirma == 1:
         estados[indice] = "Alquilado"
         print("Alquiler confirmado de: ", marcas[indice], modelos[indice], "(", patentes[indice], ")")
         print("Debés abonar: $", total)
-    else:
+    elif confirma == 2:
         print("Alquiler cancelado. El auto sigue disponible")
 
 # funcion para que el usuario pueda ordenar de mayor a menor o al reves los precios de los autos, y despues guarda los datos en los respectivos arrays
@@ -144,7 +194,11 @@ def filtrarPorPrecio():
     print("----- FILTRAR AUTOS POR PRECIO -----")
     print("1. De menor a mayor")
     print("2. De mayor a menor")
+
     opcion = int(input("Elegí una opción: "))
+    while opcion < 1 or opcion > 2:
+        print("Debés ingresar 1 o 2.")
+        opcion = int(input("Elegí una opción (1 = menor a mayor / 2 = mayor a menor): "))
 
     if opcion == 1:
         burbujeoOrden(ascendente=True)
@@ -167,7 +221,11 @@ def menu():
         print("3. Alquilar auto")
         print("4. Filtrar autos por precio")
         print("5. Salir")
+
         opcion = int(input("Elegí una opción: "))
+        while opcion < 1 or opcion > 5:
+            print("Debés ingresar un número entre 1 y 2.")
+            opcion = int(input("Elegí una opción: "))
 
         if opcion == 1:
             mostrarAutos()
@@ -177,7 +235,7 @@ def menu():
             alquilarAuto()
         elif opcion == 4:
             filtrarPorPrecio()
-        elif opcion == 4:
+        elif opcion == 5:
             print("GRACIAS POR USAR DRIVIO")
             break
         else:
