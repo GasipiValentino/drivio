@@ -6,6 +6,11 @@ años = []
 precios = []
 estados = []
 
+# listas par. necesarias para mostrar el alquiler de los autos
+historial_autos = []
+historial_dias = []
+historial_montos = []
+
 def cargarAutosExistentes():
     # creo la lista autos con los datos necesarios
     autos = [
@@ -169,6 +174,12 @@ def alquilarAuto():
         estados[indice] = "Alquilado"
         print("Alquiler confirmado de: ", marcas[indice], modelos[indice], "(", patentes[indice], ")")
         print("Debés abonar: $", total)
+
+        # Guardar los datos del auto que alquiló el usuaroi para despues poder mostrarlo correctamente en el historial
+        autoAlquilado = marcas[indice] + " " + modelos[indice]
+        historial_autos.append(autoAlquilado)
+        historial_dias.append(diasSeleccionados)
+        historial_montos.append(total)
     elif confirma == 2:
         print("Alquiler cancelado. El auto sigue disponible")
 
@@ -189,7 +200,7 @@ def burbujeoOrden(ascendente=True):
                 estados[j], estados[j + 1] = estados[j + 1], estados[j]
 
 
-# Funcion para que el usuario elija como filtrar por precip, usa burbujeoOrden
+# funcion para que el usuario elija como filtrar por precip, usa burbujeoOrden
 def filtrarPorPrecio():
     print("----- FILTRAR AUTOS POR PRECIO -----")
     print("1. De menor a mayor")
@@ -211,35 +222,175 @@ def filtrarPorPrecio():
     else:
         print("Opción inválida.")
 
+def devolverAuto():
+    print("\n----- DEVOLVER AUTO -----")
+    
+    hayAlquilados = False
+    for i in range(len(estados)):
+        if estados[i] == "Alquilado":
+            hayAlquilados = True
+            break
+    
+    if not hayAlquilados:
+        print("No hay autos alquilados para devolver.\n")
+        return
+    
+    print("Autos alquilados:")
+    autosAlquilados = []
+    for i in range(len(estados)):
+        if estados[i] == "Alquilado":
+            autosAlquilados.append(i)
+            print(len(autosAlquilados), ". ", marcas[i], modelos[i], " - Patente: ", patentes[i])
+    
+    seleccion = int(input(f"Seleccioná el auto a devolver (1 - {len(autosAlquilados)}): "))
+    while seleccion < 1 or seleccion > len(autosAlquilados):
+        print(f"Ingresa un número dentro del rango. 1 - {len(autosAlquilados)}")
+        seleccion = int(input(f"Seleccioná nuevamente (1 - {len(autosAlquilados)}): "))
+    
+    indice = autosAlquilados[seleccion - 1]
+    estados[indice] = "Disponible"
+    print("Auto devuelto correctamente: ", marcas[indice], modelos[indice], "(", patentes[indice], ")")
+    print("El auto ahora está disponible para alquilar.\n")
+
+# funcioon para mostrar el historiakl de autos alquilados y sus respectivos datos (auto dias y monto)
+def mostrarHistorial():
+    print("\n----- HISTORIAL DE ALQUILERES -----")
+    
+    if len(historial_autos) == 0:
+        print("No hay alquileres registrados aún.\n")
+        return
+    
+    for i in range(len(historial_autos)):
+        print(i+1, ". ", historial_autos[i], " - Días: ", historial_dias[i], " - Monto: $", historial_montos[i])
+    print()
+
+
+# funcion para mostrar las estadisticas del sistrma (mostramos estadisitiacs generales como el auto mas viejo/nuevo caro/barato etc y estadisticas de los alquileres)
+def mostrarEstadisticas():
+    print("\n----- ESTADÍSTICAS DE DRIVIO -----")
+    
+    totalAutos = len(marcas)
+    print("Total de autos en el sistema:", totalAutos)
+    
+    autosDisponibles = 0
+    autosAlquilados = 0
+    for i in range(len(estados)):
+        if estados[i] == "Disponible":
+            autosDisponibles = autosDisponibles + 1
+        elif estados[i] == "Alquilado":
+            autosAlquilados = autosAlquilados + 1
+    
+    print("Autos disponibles:", autosDisponibles)
+    print("Autos alquilados:", autosAlquilados)
+    
+    if len(precios) > 0:
+        indiceMasCaro = 0
+        precioMasCaro = precios[0]
+        for i in range(len(precios)):
+            if precios[i] > precioMasCaro:
+                precioMasCaro = precios[i]
+                indiceMasCaro = i
+        
+        print("Auto más caro:", marcas[indiceMasCaro], modelos[indiceMasCaro], "- $", precioMasCaro, "por día")
+    
+    if len(precios) > 0:
+        indiceMasBarato = 0
+        precioMasBarato = precios[0]
+        for i in range(len(precios)):
+            if precios[i] < precioMasBarato:
+                precioMasBarato = precios[i]
+                indiceMasBarato = i
+        
+        print("Auto más barato:", marcas[indiceMasBarato], modelos[indiceMasBarato], "- $", precioMasBarato, "por día")
+    
+    if len(años) > 0:
+        indiceMasNuevo = 0
+        añoMasNuevo = años[0]
+        for i in range(len(años)):
+            if años[i] > añoMasNuevo:
+                añoMasNuevo = años[i]
+                indiceMasNuevo = i
+        
+        print("Auto más nuevo:", marcas[indiceMasNuevo], modelos[indiceMasNuevo], "(", añoMasNuevo, ")")
+    
+    if len(años) > 0:
+        indiceMasViejo = 0
+        añoMasViejo = años[0]
+        for i in range(len(años)):
+            if años[i] < añoMasViejo:
+                añoMasViejo = años[i]
+                indiceMasViejo = i
+        
+        print("Auto más viejo:", marcas[indiceMasViejo], modelos[indiceMasViejo], "(", añoMasViejo, ")")
+    
+    if len(precios) > 0:
+        sumaPrecios = 0
+        for i in range(len(precios)):
+            sumaPrecios = sumaPrecios + precios[i]
+        
+        promedio = sumaPrecios / len(precios)
+        print("Precio promedio de alquiler por día: $", int(promedio))
+    
+    print("\n--- Estadísticas de alquileres ---")
+    print("Total de alquileres realizados:", len(historial_autos))
+    
+    if len(historial_montos) > 0:
+        totalRecaudado = 0
+        for i in range(len(historial_montos)):
+            totalRecaudado = totalRecaudado + historial_montos[i]
+        
+        print("Total recaudado: $", totalRecaudado)
+        
+        promedioMonto = totalRecaudado / len(historial_montos)
+        print("Monto promedio por alquiler: $", int(promedioMonto))
+    
+    if len(historial_dias) > 0:
+        totalDias = 0
+        for i in range(len(historial_dias)):
+            totalDias = totalDias + historial_dias[i]
+        
+        promedioDias = totalDias / len(historial_dias)
+        print("Promedio de días por alquiler:", int(promedioDias))
+    
+    print()
+
 # aca vamos a agregar todas las funcionalidades del usuario, por ahora ver autos y regitrar uno, depués "alquilar auto" por ejemplo. comienza cargando los autos precargados
 def menu():
     cargarAutosExistentes()
     while True:
-        print("--- MENÚ PRINCIPAL DRIVIO ---")
-        print("1. Mostrar autos")
-        print("2. Registrar nuevo auto")
-        print("3. Alquilar auto")
-        print("4. Filtrar autos por precio")
-        print("5. Salir")
+        print("========== MENÚ PRINCIPAL DRIVIO ==========")
+        print("1. Mostrar autos disponibles")
+        print("2. Alquilar un auto")
+        print("3. Registrar un nuevo auto")
+        print("4. Filtrar vehículo por precio")
+        print("5. Mostrar historial de alquileres")
+        print("6. Ver estadísticas de 'Drivio'")
+        print("7. Devolver un auto")
+        print("8. Salir")
+        print("===========================================")
 
         opcion = int(input("Elegí una opción: "))
-        while opcion < 1 or opcion > 5:
-            print("Debés ingresar un número entre 1 y 2.")
+        while opcion < 1 or opcion > 8:
+            print("Debés ingresar un número entre 1 y 8.")
             opcion = int(input("Elegí una opción: "))
 
         if opcion == 1:
             mostrarAutos()
         elif opcion == 2:
-            registrarAuto()
-        elif opcion == 3:
             alquilarAuto()
+        elif opcion == 3:
+            registrarAuto()
         elif opcion == 4:
             filtrarPorPrecio()
         elif opcion == 5:
-            print("GRACIAS POR USAR DRIVIO")
+            mostrarHistorial()
+        elif opcion == 6:
+            mostrarEstadisticas()
+        elif opcion == 7:
+            devolverAuto()
+        elif opcion == 8:
+            print("\n¡GRACIAS POR USAR DRIVIO!")
             break
-        else:
-            print("Opción inválida. Intentá de nuevo.")
 
 
 menu()
