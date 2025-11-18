@@ -11,6 +11,20 @@ historial_autos = []
 historial_dias = []
 historial_montos = []
 
+
+"""
+    Carga un conjunto inicial de autos al sistema.
+
+    Esta función precarga una lista de vehículos con sus respectivos datos
+    (marca, modelo, patente, año, precio y estado) y los distribuye en las
+    listas paralelas globales utilizadas por el programa.
+
+    Modifica las listas globales: marcas, modelos, patentes, años, precios
+    y estados.
+
+    Se ejecuta automáticamente al iniciar el menú principal.
+"""
+
 def cargarAutosExistentes():
     # creo la lista autos con los datos necesarios
     autos = [
@@ -40,25 +54,39 @@ def cargarAutosExistentes():
 
 
 
+
+"""
+    Muestra en pantalla todos los autos registrados en el sistema.
+
+    Recorre la lista paralela de marcas y con el índice, muestra los datos de cada auto
+    y los imprime de manera ordenada. Actualmente muestra autos disponibles
+    y alquilados por igual.
+ """
+
 # creo la funcion para mostrar los autos, por ahora muestra todos, después tendríamos que hacer una que muestre solo los disponibles
 def mostrarAutos():
-    print("----- AUTOS EN 'DRIVIO' -----")
+    print("===== AUTOS EN 'DRIVIO' =====")
     # bucle para recorrer todos los autos, uso length de marcas pero se puede usar cualquiera porque tienen todos el mismo largo
     for i in range(len(marcas)):
         print(i+1, ". ", marcas[i], modelos[i], años[i], " - Patente: ", patentes[i], " - $", precios[i], " por día - Estado: ", estados[i])
 
-# funcion para evitar que se carguen autos duplicados
-# def insertarUnico(lista, dato):
-#     for i in range(len(lista)):
-#         if lista[i] == dato:
-#             print("Error: la patente ya está registrada")
-#             return False
-#     lista.append(dato)
-#     print("Auto agregado correctamente")
-#     return True
+
+"""
+    Registra un nuevo auto en el sistema.
+
+    Pide al usuario que ingrese los datos del vehículo (marca, modelo, año,
+    patente y precio por día), validando cada campo. En particular, verifica:
+
+        - Marca y modelo: no vacíos.
+        - Año: entre 2010 y 2025.
+        - Patente: entre 5 y 7 caracteres alfanuméricos.No repetida 
+        - Precio: entre 1.000 y 100.000.
+
+    Una vez validados, se agrega el auto a las listas paralelas globales.
+"""
 
 def registrarAuto():
-    print("----- REGISTRAR AUTO -----")
+    print("===== REGISTRAR AUTO =====")
     # pongo todos los campos que necesitamos para crear un nuevo auto, después hay que validar los datos ingresados (SEMANA 5). No ponemos el estado ya que después lo creamos con "Disponible"
     marca = input("Ingresá la marca del vehículo: ")
     while len(marca) < 1:
@@ -101,20 +129,6 @@ def registrarAuto():
         print("Ingrese un precio entre 1.000 y 100.000.")
         precio = int(input("Ingresá el precio por día del vehículo: "))
 
-    # para verificar que no exista la patente y se agregue un auto con una duplicada. pregunta si la variable "patente" existe en el array patentes, después habría que hacer que cuando ingrese una patente repetida, se la pída de vuelta, así no tiene que completar todos los datos de nuevo (SEMANA 5)
-    # if patente in patentes:
-    #     print("Ya existe un auto con esa patente. Volvé a intentarlo")
-    #     return
-
-    #para verificar si la pantente que se quiere registrar ya existe
-    # repetido = False
-    # for i in range(len(patentes)):
-    #     if patentes[i] == patente:
-    #         repetido = True
-    
-    # if repetido == True:
-    #     print("Error: la patente ya está registrada")
-    #     print("No se pudo registrar el auto")
 
         # si no está repetida, agregamos los datos que ingresó ewl usuario a las listas paralelas
         marcas.append(marca)
@@ -126,10 +140,24 @@ def registrarAuto():
         print("Auto registrado correctamente: ", marca, modelo, "(", patente , ")")
 
 
+"""
+    Permite al usuario alquilar un auto disponible.
+
+    Pasos:
+        1. Muestra todos los autos.
+        2. Pide seleccionar uno dentro del rango.
+        3. Valida que el auto no esté alquilado.
+        4. Solicita cantidad de días.
+        5. Calcula el monto total.
+        6. Pide confirmación antes de procesar el alquiler.
+        7. Registra el alquiler en el historial.
+        8. Actualiza el estado del vehículo a 'Alquilado'
+"""
+
 def alquilarAuto():
     # mostramos el auto a alquilar y despues dejamos que el usuario elija el que desee
     mostrarAutos()
-    print("----- ALQUILAR AUTO -----")
+    print("===== ALQUILAR AUTO =====")
     autoSeleccionado = int(input(f"Seleccioná el auto a alquilar (1 - {len(patentes)}): "))
     while autoSeleccionado < 1 or autoSeleccionado > len(patentes):
         print(f"Ingresa un número dentro del rango. 1 - {len(patentes)}")
@@ -183,6 +211,19 @@ def alquilarAuto():
     elif confirma == 2:
         print("Alquiler cancelado. El auto sigue disponible")
 
+"""
+    Ordena los autos según su precio utilizando el método burbuja.
+
+    Args:
+        ascendente (bool):  
+            True  → ordena de menor a mayor precio
+            False → ordena de mayor a menor precio
+
+    Este método no solo reordena la lista de precios, sino también
+    TODAS las listas paralelas asociadas, manteniendo la coherencia
+    entre los datos de cada auto.
+"""
+
 # funcion para que el usuario pueda ordenar de mayor a menor o al reves los precios de los autos, y despues guarda los datos en los respectivos arrays
 def burbujeoOrden(ascendente=True):
     n = len(precios)
@@ -200,9 +241,20 @@ def burbujeoOrden(ascendente=True):
                 estados[j], estados[j + 1] = estados[j + 1], estados[j]
 
 
+"""
+    Permite al usuario ordenar los autos por precio.
+
+    Opciones:
+        1. De menor a mayor.
+        2. De mayor a menor.
+
+    Llama internamente a burbujeoOrden() para realizar el ordenamiento
+    y luego muestra los autos ordenados con mostrarAutos().
+"""
+
 # funcion para que el usuario elija como filtrar por precip, usa burbujeoOrden
 def filtrarPorPrecio():
-    print("----- FILTRAR AUTOS POR PRECIO -----")
+    print("===== FILTRAR AUTOS POR PRECIO =====")
     print("1. De menor a mayor")
     print("2. De mayor a menor")
 
@@ -222,8 +274,19 @@ def filtrarPorPrecio():
     else:
         print("Opción inválida.")
 
+
+
+"""
+    Permite al usuario devolver un auto previamente alquilado.
+
+    Pasos:
+        1. Verifica si hay autos alquilados.
+        2. Muestra únicamente los autos que alquiló.
+        3. Solicita que el usuario seleccione cuál devolver.
+        4. Cambia su estado a 'Disponible'.
+"""
 def devolverAuto():
-    print("\n----- DEVOLVER AUTO -----")
+    print("\n===== DEVOLVER AUTO =====")
     
     hayAlquilados = False
     for i in range(len(estados)):
@@ -252,9 +315,19 @@ def devolverAuto():
     print("Auto devuelto correctamente: ", marcas[indice], modelos[indice], "(", patentes[indice], ")")
     print("El auto ahora está disponible para alquilar.\n")
 
+
+"""
+    Muestra el historial de todos los autos alquilados.
+
+    Por cada alquiler muestra:
+        - Nombre del auto
+        - Cantidad de días alquilado
+        - Monto total cobrado
+    """
+
 # funcioon para mostrar el historiakl de autos alquilados y sus respectivos datos (auto dias y monto)
 def mostrarHistorial():
-    print("\n----- HISTORIAL DE ALQUILERES -----")
+    print("\n===== HISTORIAL DE ALQUILERES =====")
     
     if len(historial_autos) == 0:
         print("No hay alquileres registrados aún.\n")
@@ -265,9 +338,24 @@ def mostrarHistorial():
     print()
 
 
+
+"""
+    Muestra estadísticas globales del sistema y de los alquileres.
+
+    Incluye:
+        - Total de autos cargados.
+        - Autos disponibles y alquilados.
+        - Auto más caro/barato.
+        - Auto más nuevo/viejo.
+        - Precio promedio de alquiler.
+        - Total de alquileres realizados.
+        - Total y promedio de montos recaudados.
+        - Promedio de días por alquiler.
+    """
+
 # funcion para mostrar las estadisticas del sistrma (mostramos estadisitiacs generales como el auto mas viejo/nuevo caro/barato etc y estadisticas de los alquileres)
 def mostrarEstadisticas():
-    print("\n----- ESTADÍSTICAS DE DRIVIO -----")
+    print("\n===== ESTADÍSTICAS DE DRIVIO =====")
     
     totalAutos = len(marcas)
     print("Total de autos en el sistema:", totalAutos)
@@ -354,6 +442,23 @@ def mostrarEstadisticas():
     
     print()
 
+
+
+"""
+    Inicia el menú principal del sistema/app DRIVIO.
+
+    Funcionalidades disponibles:
+        1. Mostrar autos
+        2. Alquilar auto
+        3. Registrar auto
+        4. Filtrar por precio
+        5. Mostrar historial
+        6. Ver estadísticas
+        7. Devolver auto
+        8. Salir
+
+    Este menú se ejecuta en un bucle infinito hasta que el usuario seleccione 'Salir'.
+    """
 # aca vamos a agregar todas las funcionalidades del usuario, por ahora ver autos y regitrar uno, depués "alquilar auto" por ejemplo. comienza cargando los autos precargados
 def menu():
     cargarAutosExistentes()
